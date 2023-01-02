@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import maplibregl from 'maplibre-gl';
+import axios from 'axios';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './map.css';
 
@@ -11,6 +12,7 @@ export default function Map(){
   const [zoom] = useState(14);
   const [API_KEY] = useState('7cIMefYtUxyFov4MBDhw');
 
+  const [pins, setpins] = useState([])
   useEffect(() => {
     if (map.current) return;
     map.current = new maplibregl.Map({
@@ -21,15 +23,29 @@ export default function Map(){
     });
 
     // create the popup
-    var title = "omaditya";
-    var popup = new maplibregl.Popup({ offset: 25 }).setText(
-        'title = '+title
+    var title = "vacation";
+    var name = "omaditya";
+    var popup = new maplibregl.Popup({ offset: 25 }).setHTML(
+        "<h1>Name : </h1><p>"+name+"</p><br><h1>Title : </h1><p>"+title+"</p>"
     );
 
+    
     new maplibregl.Marker({color: '#FF0000'})
         .setLngLat([139.7525,35.6846])
         .setPopup(popup) 
         .addTo(map.current);
+
+
+    const getPins = async ()=>{
+      try {
+        const res = await axios.get("/pins");
+        setpins(res.data);
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    getPins()
   });
 
   return (
